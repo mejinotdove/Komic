@@ -5,7 +5,7 @@ import pathlib
 
 from sqlalchemy.orm import Session
 
-from app.config import MANKA_PATH
+from app.config import MANKA_PATH, EXCLUDE_DIRS
 from app.models import Comic
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".avif"}
@@ -70,6 +70,8 @@ def scan_manka(db: Session):
 
     for date_dir in date_dirs:
         if not date_dir.is_dir():
+            continue
+        if date_dir.name in EXCLUDE_DIRS:
             continue
 
         for entry in sorted(date_dir.iterdir()):
