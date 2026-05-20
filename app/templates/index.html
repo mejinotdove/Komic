@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Komic</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <link rel="stylesheet" href="/static/app.css">
+</head>
+<body>
+  <header>
+    <h1>Komic</h1>
+    <nav>
+      <a href="/">所有漫画</a>
+      <button hx-post="/api/scan" hx-target="#scan-result" hx-swap="innerHTML">重新扫描</button>
+      <span id="scan-result"></span>
+    </nav>
+    <div class="toolbar">
+      <input type="text" id="search" placeholder="搜索漫画..." 
+             hx-get="/comics" hx-trigger="keyup changed delay:300ms" hx-target="#comic-grid" hx-swap="innerHTML" name="search">
+      <select id="rating-filter" name="rating" hx-get="/comics" hx-target="#comic-grid" hx-swap="innerHTML">
+        <option value="">全部评分</option>
+        <option value="0">未评分</option>
+        <option value="5">5 星</option>
+        <option value="4">4 星</option>
+        <option value="3">3 星</option>
+        <option value="2">2 星</option>
+        <option value="1">1 星</option>
+      </select>
+      <select id="tag-filter" name="tag" hx-get="/comics" hx-target="#comic-grid" hx-swap="innerHTML">
+        <option value="">全部标签</option>
+        {% for tag in tags %}
+        <option value="{{ tag.name }}">{{ tag.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+  </header>
+
+  <main>
+    <div id="comic-grid" class="comic-grid" hx-get="/comics" hx-trigger="load" hx-swap="innerHTML">
+      加载中...
+    </div>
+  </main>
+</body>
+</html>

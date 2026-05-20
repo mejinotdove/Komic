@@ -1,0 +1,15 @@
+services:
+  komic:
+    build: .
+    container_name: komic
+    ports:
+      - "8000:8000"
+    volumes:
+      # 替换为你的NAS漫画目录路径
+      - /share/manka:/manka:ro
+      - ./data:/data
+    environment:
+      - MANKA_PATH=/manka
+      - DB_PATH=/data/komic.db
+      - DAV_PREFIX=/dav
+    restart: unless-stopped

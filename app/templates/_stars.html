@@ -1,0 +1,9 @@
+<div class="stars" hx-preserve>
+  {% for i in range(1, 6) %}
+  <button class="star{% if comic.rating >= i %} active{% endif %}"
+          hx-post="/api/comics/{{ comic.id }}/rating?rating={{ i }}"
+          hx-target="#comic-{{ comic.id }} .stars"
+          hx-swap="outerHTML"
+          title="{{ i }} 星">★</button>
+  {% endfor %}
+</div>
