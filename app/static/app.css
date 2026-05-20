@@ -209,6 +209,26 @@ header nav a:hover, header nav button:hover {
 .pagination button:hover { color: #fff; border-color: #888; }
 .pagination button.active { color: #fff; border-color: #f5c518; background: #333; }
 
+.pagination .page-info {
+  color: #666;
+  font-size: 0.8rem;
+  align-self: center;
+  margin-right: 0.5rem;
+}
+
+.pagination .ellipsis {
+  color: #666;
+  padding: 0.3rem 0.2rem;
+  align-self: center;
+}
+
+.grid-info {
+  text-align: center;
+  color: #555;
+  font-size: 0.8rem;
+  padding: 0.5rem 1.5rem;
+}
+
 .empty {
   grid-column: 1 / -1;
   text-align: center;

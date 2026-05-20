@@ -1,3 +1,4 @@
+<div id="comic-grid" class="comic-grid">
 {% for comic in comics %}
 <div class="comic-card" id="comic-{{ comic.id }}">
   <img class="comic-cover" src="/api/comics/{{ comic.id }}/cover" alt="{{ comic.title }}" loading="lazy">
@@ -27,15 +28,28 @@
 {% else %}
 <div class="empty">没有找到漫画</div>
 {% endfor %}
+</div>
 
-{% if total > page_size %}
+{% if total_pages > 1 %}
 <div class="pagination" hx-preserve>
-  {% for p in range(1, ((total - 1) // page_size) + 2) %}
-  <button hx-get="/comics?page={{ p }}&page_size={{ page_size }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
-          hx-target="#comic-grid"
-          hx-swap="innerHTML"
-          hx-trigger="click"
-          class="{% if p == page %}active{% endif %}">{{ p }}</button>
+  <span class="page-info">{{ total }} 本，第 {{ page }}/{{ total_pages }} 页</span>
+  {% if page > 1 %}
+  <button hx-get="/comics?page={{ page - 1 }}&page_size={{ page_size }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+          hx-target="#comic-grid" hx-swap="outerHTML">‹</button>
+  {% endif %}
+  {% for p in pages %}
+    {% if p is none %}
+    <span class="ellipsis">…</span>
+    {% else %}
+    <button hx-get="/comics?page={{ p }}&page_size={{ page_size }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+            hx-target="#comic-grid" hx-swap="outerHTML"
+            class="{% if p == page %}active{% endif %}">{{ p }}</button>
+    {% endif %}
   {% endfor %}
+  {% if page < total_pages %}
+  <button hx-get="/comics?page={{ page + 1 }}&page_size={{ page_size }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+          hx-target="#comic-grid" hx-swap="outerHTML">›</button>
+  {% endif %}
 </div>
 {% endif %}
+<div class="grid-info">共 {{ total }} 本漫画</div>

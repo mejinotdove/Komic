@@ -9,7 +9,7 @@ from app.config import MANKA_PATH
 from app.models import Comic
 
 IMAGE_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".bmp", ".avif"}
-ARCHIVE_EXTENSIONS = {".zip", ".7z"}
+ARCHIVE_EXTENSIONS = {".zip", ".7z", ".rar"}
 
 DATE_PREFIX_RE = re.compile(r"^(\d{8})\s*[_-]?\s*(.*)")
 
@@ -48,6 +48,15 @@ def count_images_in_7z(seven_zip_path: str) -> int:
         return 0
 
 
+def count_images_in_rar(rar_path: str) -> int:
+    try:
+        import rarfile
+        with rarfile.RarFile(rar_path) as rf:
+            return sum(1 for n in rf.namelist() if pathlib.Path(n).suffix.lower() in IMAGE_EXTENSIONS)
+    except Exception:
+        return 0
+
+
 def scan_manka(db: Session):
     base = pathlib.Path(MANKA_PATH)
     if not base.exists():
@@ -55,6 +64,7 @@ def scan_manka(db: Session):
 
     created = 0
     updated = 0
+    found_paths = set()
 
     date_dirs = sorted(base.iterdir())
 
@@ -77,8 +87,13 @@ def scan_manka(db: Session):
             elif entry.suffix.lower() == ".7z":
                 page_count = count_images_in_7z(str(entry))
                 fmt = "7z"
+            elif entry.suffix.lower() == ".rar":
+                page_count = count_images_in_rar(str(entry))
+                fmt = "rar"
             else:
                 continue
+
+            found_paths.add(rel_path)
 
             if existing:
                 existing.title = title
@@ -90,5 +105,11 @@ def scan_manka(db: Session):
                 db.add(comic)
                 created += 1
 
+    deleted = 0
+    orphans = db.query(Comic).filter(~Comic.path.in_(found_paths)).all()
+    for orphan in orphans:
+        db.delete(orphan)
+        deleted += 1
+
     db.commit()
-    return {"created": created, "updated": updated}
+    return {"created": created, "updated": updated, "deleted": deleted}

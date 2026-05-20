@@ -1,3 +1,5 @@
+import math
+
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
@@ -8,6 +10,26 @@ from app.models import Comic, Tag
 
 router = APIRouter(tags=["web"])
 templates = Jinja2Templates(directory="app/templates")
+
+WINDOW = 5
+
+
+def _page_window(page, total, window=WINDOW):
+    if total <= 1:
+        return []
+    start = max(1, page - window)
+    end = min(total, page + window)
+    pages = []
+    if start > 1:
+        pages.append(1)
+        if start > 2:
+            pages.append(None)
+    pages.extend(range(start, end + 1))
+    if end < total:
+        if end < total - 1:
+            pages.append(None)
+        pages.append(total)
+    return pages
 
 
 @router.get("/", response_class=HTMLResponse)
@@ -23,7 +45,7 @@ def comic_grid(
     tag: str | None = Query(None),
     search: str | None = Query(None),
     page: int = Query(1, ge=1),
-    page_size: int = Query(50, ge=1, le=200),
+    page_size: int = Query(30, ge=1, le=200),
     db: Session = Depends(get_db),
 ):
     q = db.query(Comic)
@@ -35,6 +57,7 @@ def comic_grid(
         q = q.filter(Comic.title.ilike(f"%{search}%"))
 
     total = q.count()
+    total_pages = math.ceil(total / page_size)
     q = q.order_by(Comic.title).offset((page - 1) * page_size).limit(page_size)
     comics = q.all()
 
@@ -43,6 +66,8 @@ def comic_grid(
         "total": total,
         "page": page,
         "page_size": page_size,
+        "total_pages": total_pages,
+        "pages": _page_window(page, total_pages),
         "rating": rating,
         "tag": tag,
         "search": search,

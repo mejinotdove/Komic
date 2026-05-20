@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends, Query, Request
+from fastapi.responses import JSONResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
@@ -160,4 +161,5 @@ def delete_tag(tag_id: int, db: Session = Depends(get_db)):
 
 @router.post("/scan")
 def trigger_scan(db: Session = Depends(get_db)):
-    return scan_manka(db)
+    result = scan_manka(db)
+    return JSONResponse(content=result, headers={"HX-Trigger": "scan-complete"})

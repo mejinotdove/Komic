@@ -12,13 +12,12 @@
     <h1>Komic</h1>
     <nav>
       <a href="/">所有漫画</a>
-      <button hx-post="/api/scan" hx-target="#scan-result" hx-swap="innerHTML">重新扫描</button>
-      <span id="scan-result"></span>
+      <button hx-post="/api/scan" hx-swap="none">重新扫描</button>
     </nav>
     <div class="toolbar">
       <input type="text" id="search" placeholder="搜索漫画..." 
-             hx-get="/comics" hx-trigger="keyup changed delay:300ms" hx-target="#comic-grid" hx-swap="innerHTML" name="search">
-      <select id="rating-filter" name="rating" hx-get="/comics" hx-target="#comic-grid" hx-swap="innerHTML">
+             hx-get="/comics" hx-trigger="keyup changed delay:300ms" hx-target="#comic-grid" hx-swap="outerHTML" name="search">
+      <select id="rating-filter" name="rating" hx-get="/comics" hx-target="#comic-grid" hx-swap="outerHTML">
         <option value="">全部评分</option>
         <option value="0">未评分</option>
         <option value="5">5 星</option>
@@ -27,7 +26,7 @@
         <option value="2">2 星</option>
         <option value="1">1 星</option>
       </select>
-      <select id="tag-filter" name="tag" hx-get="/comics" hx-target="#comic-grid" hx-swap="innerHTML">
+      <select id="tag-filter" name="tag" hx-get="/comics" hx-target="#comic-grid" hx-swap="outerHTML">
         <option value="">全部标签</option>
         {% for tag in tags %}
         <option value="{{ tag.name }}">{{ tag.name }}</option>
@@ -37,7 +36,7 @@
   </header>
 
   <main>
-    <div id="comic-grid" class="comic-grid" hx-get="/comics" hx-trigger="load" hx-swap="innerHTML">
+    <div id="comic-grid" class="comic-grid" hx-get="/comics" hx-trigger="load, scan-complete from:body" hx-swap="outerHTML">
       加载中...
     </div>
   </main>

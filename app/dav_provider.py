@@ -279,6 +279,7 @@ class ComicArchiveResource(DAVNonCollection):
         return {
             ".zip": "application/zip",
             ".7z": "application/x-7z-compressed",
+            ".rar": "application/vnd.rar",
         }.get(ext, "application/octet-stream")
 
     def support_ranges(self):

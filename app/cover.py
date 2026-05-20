@@ -50,6 +50,21 @@ def _cover_from_7z(seven_zip_path: str):
     return None
 
 
+def _cover_from_rar(rar_path: str):
+    try:
+        import rarfile
+        with rarfile.RarFile(rar_path) as rf:
+            names = sorted(rf.namelist())
+            for name in names:
+                if pathlib.Path(name).suffix.lower() in IMAGE_EXTENSIONS and not name.endswith("/"):
+                    data = rf.read(name)
+                    ext = pathlib.Path(name).suffix.lower()
+                    return data, ext
+    except Exception:
+        pass
+    return None
+
+
 def get_cover_response(comic_id: int, db: Session):
     comic = db.query(Comic).filter(Comic.id == comic_id).first()
     if not comic:
@@ -71,6 +86,12 @@ def get_cover_response(comic_id: int, db: Session):
             return Response(content=data, media_type=mime)
     elif comic.format == "7z":
         result = _cover_from_7z(full_path)
+        if result:
+            data, ext = result
+            mime = mimetype_from_ext(ext)
+            return Response(content=data, media_type=mime)
+    elif comic.format == "rar":
+        result = _cover_from_rar(full_path)
         if result:
             data, ext = result
             mime = mimetype_from_ext(ext)
