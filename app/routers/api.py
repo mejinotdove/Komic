@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, Query, Request
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
 from typing import Optional
@@ -7,7 +7,8 @@ from typing import Optional
 from app.database import get_db
 from app.models import Comic, Tag
 from app.scanner import scan_manka
-from app.cover import get_cover_response
+from app.cover import get_cover_response, _ensure_page_count
+from app.scan_manager import start_scan, get_scan_status
 
 router = APIRouter(prefix="/api", tags=["api"])
 
@@ -81,6 +82,7 @@ def get_comic(comic_id: int, db: Session = Depends(get_db)):
     comic = db.query(Comic).filter(Comic.id == comic_id).first()
     if not comic:
         return {"error": "not found"}, 404
+    _ensure_page_count(comic, db)
     return ComicOut(
         id=comic.id,
         title=comic.title,
@@ -160,6 +162,37 @@ def delete_tag(tag_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("/scan")
-def trigger_scan(db: Session = Depends(get_db)):
-    result = scan_manka(db)
-    return JSONResponse(content=result, headers={"HX-Trigger": "scan-complete"})
+def trigger_scan(request: Request):
+    started = start_scan()
+    if not started:
+        return JSONResponse({"error": "scan already running"}, status_code=409)
+    return JSONResponse(
+        {"status": "started"},
+        headers={"HX-Trigger": "scan-started"},
+        status_code=202,
+    )
+
+
+@router.get("/scan/progress-bar")
+def scan_progress_bar(request: Request):
+    status = get_scan_status()
+    if status["error"]:
+        html = f'''<div id="scan-progress" class="scan-progress scan-error">
+                   扫描失败: {status["error"]}
+                   </div>'''
+        return HTMLResponse(html, headers={"HX-Trigger": "scan-complete"})
+
+    if status["running"]:
+        total = status["total"] or 1
+        pct = int(status["processed"] / total * 100)
+        html = f'''<div id="scan-progress" class="scan-progress"
+                        hx-get="/api/scan/progress-bar" hx-trigger="every 1s" hx-swap="outerHTML">
+                   <progress value="{status["processed"]}" max="{status["total"]}"></progress>
+                   <span>扫描中 {status["processed"]}/{status["total"]} ({pct}%) …</span>
+                   </div>'''
+        return HTMLResponse(html)
+    else:
+        html = f'''<div id="scan-progress" class="scan-progress scan-done">
+                   扫描完成: +{status["created"]} 新增, {status["updated"]} 更新, {status["deleted"]} 删除
+                   </div>'''
+        return HTMLResponse(html, headers={"HX-Trigger": "scan-complete"})

@@ -65,11 +65,32 @@ def _cover_from_rar(rar_path: str):
     return None
 
 
+def _ensure_page_count(comic, db):
+    if comic.page_count_valid:
+        return
+    from app.scanner import count_images_in_dir, count_images_in_zip, count_images_in_7z, count_images_in_rar
+    from app.config import MANKA_PATH
+    full_path = os.path.join(MANKA_PATH, comic.path)
+    if comic.format == "dir":
+        comic.page_count = count_images_in_dir(full_path)
+    elif comic.format == "zip":
+        comic.page_count = count_images_in_zip(full_path)
+    elif comic.format == "7z":
+        comic.page_count = count_images_in_7z(full_path)
+    elif comic.format == "rar":
+        comic.page_count = count_images_in_rar(full_path)
+    else:
+        comic.page_count = 0
+    comic.page_count_valid = True
+    db.commit()
+
+
 def get_cover_response(comic_id: int, db: Session):
     comic = db.query(Comic).filter(Comic.id == comic_id).first()
     if not comic:
         return Response(status_code=404)
 
+    _ensure_page_count(comic, db)
     full_path = os.path.join(MANKA_PATH, comic.path)
 
     if comic.format == "dir":

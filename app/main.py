@@ -26,8 +26,8 @@ dav_app = WsgiDAVApp(dav_config)
 
 @app.on_event("startup")
 def on_startup():
-    init_db()
     os.makedirs(os.path.dirname(os.environ.get("DB_PATH", "/data/komic.db")), exist_ok=True)
+    init_db()
 
 
 from fastapi.middleware.wsgi import WSGIMiddleware

@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Table, ForeignKey
+from sqlalchemy import Boolean, Column, Float, Integer, String, Table, ForeignKey
 from sqlalchemy.orm import relationship
 
 from app.database import Base
@@ -20,6 +20,8 @@ class Comic(Base):
     format = Column(String, nullable=False)
     rating = Column(Integer, default=0)
     page_count = Column(Integer, nullable=True)
+    page_count_valid = Column(Boolean, default=False)
+    file_mtime = Column(Float, nullable=True)
 
     tags = relationship("Tag", secondary=comic_tag_table, back_populates="comics")
 

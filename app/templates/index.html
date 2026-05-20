@@ -12,7 +12,11 @@
     <h1>Komic</h1>
     <nav>
       <a href="/">所有漫画</a>
-      <button hx-post="/api/scan" hx-swap="none">重新扫描</button>
+      <button hx-post="/api/scan" hx-swap="none"
+              hx-on:htmx:after-request="if(event.detail.xhr.status==202)this.disabled=true;
+                                         if(event.detail.xhr.status==409)alert('扫描正在进行中')">
+        重新扫描
+      </button>
     </nav>
     <div class="toolbar">
       <input type="text" id="search" placeholder="搜索漫画..." 
@@ -36,6 +40,10 @@
   </header>
 
   <main>
+    <div id="scan-progress"
+         hx-get="/api/scan/progress-bar"
+         hx-trigger="scan-started from:body"
+         hx-swap="outerHTML"></div>
     <div id="comic-grid" class="comic-grid" hx-get="/comics" hx-trigger="load, scan-complete from:body" hx-swap="outerHTML">
       加载中...
     </div>

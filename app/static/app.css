@@ -184,10 +184,26 @@ header nav a:hover, header nav button:hover {
   cursor: pointer;
 }
 
-#scan-result {
-  font-size: 0.8rem;
-  color: #8d8;
-  margin-left: 0.5rem;
+.scan-progress {
+  text-align: center;
+  padding: 0.8rem 1.5rem;
+  color: #aaa;
+  font-size: 0.85rem;
+}
+.scan-progress progress {
+  width: 60%;
+  height: 8px;
+  margin-right: 0.8rem;
+  vertical-align: middle;
+}
+.scan-progress span {
+  vertical-align: middle;
+}
+.scan-done {
+  color: #4caf50;
+}
+.scan-error {
+  color: #e55;
 }
 
 .pagination {
