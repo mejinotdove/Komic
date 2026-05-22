@@ -18,9 +18,9 @@
         重新扫描
       </button>
     </nav>
-    <div class="toolbar"
-         hx-get="/comics" hx-target="#comic-grid" hx-swap="outerHTML"
-         hx-trigger="change from:#rating-filter, change from:#tag-filter, change from:#sort-by, change from:#sort-dir, keyup changed delay:300ms from:#search">
+    <form class="toolbar"
+          hx-get="/comics" hx-target="#comic-grid" hx-swap="outerHTML"
+          hx-trigger="change from:#rating-filter, change from:#tag-filter, change from:#sort-by, change from:#sort-dir, keyup changed delay:300ms from:#search">
       <input type="text" id="search" placeholder="搜索漫画..." name="search">
       <select id="rating-filter" name="rating">
         <option value="">全部评分</option>
@@ -45,7 +45,7 @@
         <option value="asc">升序</option>
         <option value="desc">降序</option>
       </select>
-    </div>
+    </form>
   </header>
 
   <main>

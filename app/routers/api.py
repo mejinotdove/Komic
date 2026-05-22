@@ -38,7 +38,7 @@ class TagOut(BaseModel):
 
 @router.get("/comics")
 def list_comics(
-    rating: Optional[int] = Query(None),
+    rating: Optional[str] = Query(None),
     tag: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
     sort_by: str = Query("title", pattern=r"^(title|file_mtime)$"),
@@ -49,8 +49,8 @@ def list_comics(
 ):
     q = db.query(Comic)
 
-    if rating is not None:
-        q = q.filter(Comic.rating == rating)
+    if rating:
+        q = q.filter(Comic.rating == int(rating))
     if tag:
         q = q.join(Comic.tags).filter(Tag.name == tag)
     if search:

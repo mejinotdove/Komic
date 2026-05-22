@@ -41,7 +41,7 @@ def index(request: Request, db: Session = Depends(get_db)):
 @router.get("/comics", response_class=HTMLResponse)
 def comic_grid(
     request: Request,
-    rating: int | None = Query(None),
+    rating: str | None = Query(None),
     tag: str | None = Query(None),
     search: str | None = Query(None),
     sort_by: str = Query("title", pattern=r"^(title|file_mtime)$"),
@@ -51,8 +51,8 @@ def comic_grid(
     db: Session = Depends(get_db),
 ):
     q = db.query(Comic)
-    if rating is not None:
-        q = q.filter(Comic.rating == rating)
+    if rating:
+        q = q.filter(Comic.rating == int(rating))
     if tag:
         q = q.join(Comic.tags).filter(Tag.name == tag)
     if search:
