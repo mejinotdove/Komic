@@ -34,20 +34,20 @@
 <div class="pagination" hx-preserve>
   <span class="page-info">{{ total }} 本，第 {{ page }}/{{ total_pages }} 页</span>
   {% if page > 1 %}
-  <button hx-get="/comics?page={{ page - 1 }}&page_size={{ page_size }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+  <button hx-get="/comics?page={{ page - 1 }}&page_size={{ page_size }}&sort_by={{ sort_by }}&sort_dir={{ sort_dir }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
           hx-target="#comic-grid" hx-swap="outerHTML">‹</button>
   {% endif %}
   {% for p in pages %}
     {% if p is none %}
     <span class="ellipsis">…</span>
     {% else %}
-    <button hx-get="/comics?page={{ p }}&page_size={{ page_size }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+    <button hx-get="/comics?page={{ p }}&page_size={{ page_size }}&sort_by={{ sort_by }}&sort_dir={{ sort_dir }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
             hx-target="#comic-grid" hx-swap="outerHTML"
             class="{% if p == page %}active{% endif %}">{{ p }}</button>
     {% endif %}
   {% endfor %}
   {% if page < total_pages %}
-  <button hx-get="/comics?page={{ page + 1 }}&page_size={{ page_size }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
+  <button hx-get="/comics?page={{ page + 1 }}&page_size={{ page_size }}&sort_by={{ sort_by }}&sort_dir={{ sort_dir }}{% if rating %}&rating={{ rating }}{% endif %}{% if tag %}&tag={{ tag }}{% endif %}{% if search %}&search={{ search }}{% endif %}"
           hx-target="#comic-grid" hx-swap="outerHTML">›</button>
   {% endif %}
 </div>

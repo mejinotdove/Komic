@@ -41,6 +41,8 @@ def list_comics(
     rating: Optional[int] = Query(None),
     tag: Optional[str] = Query(None),
     search: Optional[str] = Query(None),
+    sort_by: str = Query("title", pattern=r"^(title|file_mtime)$"),
+    sort_dir: str = Query("asc", pattern=r"^(asc|desc)$"),
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
     db: Session = Depends(get_db),
@@ -55,7 +57,10 @@ def list_comics(
         q = q.filter(Comic.title.ilike(f"%{search}%"))
 
     total = q.count()
-    q = q.order_by(Comic.title).offset((page - 1) * page_size).limit(page_size)
+
+    sort_col = getattr(Comic, sort_by)
+    q = q.order_by(sort_col if sort_dir == "asc" else sort_col.desc())
+    q = q.offset((page - 1) * page_size).limit(page_size)
     comics = q.all()
 
     return {

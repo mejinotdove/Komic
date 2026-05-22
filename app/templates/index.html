@@ -18,10 +18,11 @@
         重新扫描
       </button>
     </nav>
-    <div class="toolbar">
-      <input type="text" id="search" placeholder="搜索漫画..." 
-             hx-get="/comics" hx-trigger="keyup changed delay:300ms" hx-target="#comic-grid" hx-swap="outerHTML" name="search">
-      <select id="rating-filter" name="rating" hx-get="/comics" hx-target="#comic-grid" hx-swap="outerHTML">
+    <div class="toolbar"
+         hx-get="/comics" hx-target="#comic-grid" hx-swap="outerHTML"
+         hx-trigger="change from:#rating-filter, change from:#tag-filter, change from:#sort-by, change from:#sort-dir, keyup changed delay:300ms from:#search">
+      <input type="text" id="search" placeholder="搜索漫画..." name="search">
+      <select id="rating-filter" name="rating">
         <option value="">全部评分</option>
         <option value="0">未评分</option>
         <option value="5">5 星</option>
@@ -30,11 +31,19 @@
         <option value="2">2 星</option>
         <option value="1">1 星</option>
       </select>
-      <select id="tag-filter" name="tag" hx-get="/comics" hx-target="#comic-grid" hx-swap="outerHTML">
+      <select id="tag-filter" name="tag">
         <option value="">全部标签</option>
         {% for tag in tags %}
         <option value="{{ tag.name }}">{{ tag.name }}</option>
         {% endfor %}
+      </select>
+      <select id="sort-by" name="sort_by">
+        <option value="title">按标题</option>
+        <option value="file_mtime">按修改时间</option>
+      </select>
+      <select id="sort-dir" name="sort_dir">
+        <option value="asc">升序</option>
+        <option value="desc">降序</option>
       </select>
     </div>
   </header>

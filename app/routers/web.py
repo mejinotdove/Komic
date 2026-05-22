@@ -44,6 +44,8 @@ def comic_grid(
     rating: int | None = Query(None),
     tag: str | None = Query(None),
     search: str | None = Query(None),
+    sort_by: str = Query("title", pattern=r"^(title|file_mtime)$"),
+    sort_dir: str = Query("asc", pattern=r"^(asc|desc)$"),
     page: int = Query(1, ge=1),
     page_size: int = Query(30, ge=1, le=200),
     db: Session = Depends(get_db),
@@ -58,7 +60,10 @@ def comic_grid(
 
     total = q.count()
     total_pages = math.ceil(total / page_size)
-    q = q.order_by(Comic.title).offset((page - 1) * page_size).limit(page_size)
+
+    sort_col = getattr(Comic, sort_by)
+    q = q.order_by(sort_col if sort_dir == "asc" else sort_col.desc())
+    q = q.offset((page - 1) * page_size).limit(page_size)
     comics = q.all()
 
     return templates.TemplateResponse(request, "_comic_grid.html", {
@@ -71,4 +76,6 @@ def comic_grid(
         "rating": rating,
         "tag": tag,
         "search": search,
+        "sort_by": sort_by,
+        "sort_dir": sort_dir,
     })
