@@ -1,3 +1,10 @@
+FROM node:20-alpine AS frontend
+WORKDIR /build
+COPY frontend/package.json frontend/package-lock.json ./
+RUN npm ci
+COPY frontend/ ./
+RUN npm run build
+
 FROM python:3.12-slim
 
 WORKDIR /app
@@ -12,6 +19,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY alembic.ini .
 COPY alembic/ ./alembic/
 COPY app/ ./app/
+
+COPY --from=frontend /build/dist ./frontend/dist
 
 EXPOSE 8000
 
