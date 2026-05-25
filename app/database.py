@@ -39,3 +39,9 @@ def init_db():
         conn.execute(text("PRAGMA busy_timeout=5000"))
         conn.commit()
     run_migrations()
+
+
+def checkpoint_wal():
+    with engine.connect() as conn:
+        conn.execute(text("PRAGMA wal_checkpoint(TRUNCATE)"))
+        conn.commit()

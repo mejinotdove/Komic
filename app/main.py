@@ -30,5 +30,11 @@ def on_startup():
     init_db()
 
 
+@app.on_event("shutdown")
+def on_shutdown():
+    from app.database import checkpoint_wal
+    checkpoint_wal()
+
+
 from fastapi.middleware.wsgi import WSGIMiddleware
 app.mount(DAV_PREFIX, WSGIMiddleware(dav_app))
