@@ -1,6 +1,6 @@
 <template>
   <div v-if="store.loading" class="px-5 pt-5">
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3.5">
+    <div class="grid gap-3.5" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr))">
       <div v-for="n in 14" :key="n" class="bg-surface rounded-xl overflow-hidden border border-surface-border">
         <div class="aspect-[3/4] relative bg-input overflow-hidden">
           <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.04] to-transparent animate-shimmer"></div>
@@ -32,7 +32,7 @@
   </div>
 
   <div v-else class="px-5 pt-5">
-    <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3.5">
+    <div class="grid gap-3.5" style="grid-template-columns: repeat(auto-fill, minmax(150px, 1fr))">
       <ComicCard
         v-for="comic in store.comics"
         :key="comic.id"
