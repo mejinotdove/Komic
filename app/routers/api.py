@@ -8,6 +8,7 @@ from app.database import get_db
 from app.models import Comic, Tag
 from app.scanner import scan_manka
 from app.cover import get_cover_response, _ensure_page_count
+from app.pages import get_page_image
 from app.scan_manager import start_scan, get_scan_status
 
 router = APIRouter(prefix="/api", tags=["api"])
@@ -104,6 +105,16 @@ def comic_cover(comic_id: int, db: Session = Depends(get_db)):
     return get_cover_response(comic_id, db)
 
 
+@router.get("/comics/{comic_id}/page/{page_num}")
+def comic_page_thumbnail(
+    comic_id: int,
+    page_num: int,
+    width: int = Query(150, ge=50, le=800),
+    db: Session = Depends(get_db),
+):
+    return get_page_image(comic_id, page_num, db, width)
+
+
 @router.post("/comics/{comic_id}/rating")
 def set_rating(comic_id: int, rating: int = Query(..., ge=0, le=5), request: Request = None, db: Session = Depends(get_db)):
     comic = db.query(Comic).filter(Comic.id == comic_id).first()
@@ -176,6 +187,11 @@ def trigger_scan(request: Request):
         headers={"HX-Trigger": "scan-started"},
         status_code=202,
     )
+
+
+@router.get("/scan/status")
+def scan_status():
+    return get_scan_status()
 
 
 @router.get("/scan/progress-bar")
