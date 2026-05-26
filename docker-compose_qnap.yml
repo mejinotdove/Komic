@@ -1,0 +1,20 @@
+services:
+  komic:
+    image: komic:latest
+    container_name: komic
+    ports:
+      - "8000:8000"
+    volumes:
+      - /share/DV3/manka:/manka:ro
+      - /share/Disk0/config/komic:/data
+    environment:
+      - EXCLUDE_DIRS=manka,sync,主题分类
+    restart: unless-stopped
+    networks:
+      qnap_exist_net:
+        ipv4_address: 10.0.10.53
+
+networks:
+  qnap_exist_net:
+    external: true
+    name : qnet-static-eth0-20cf19
