@@ -5,7 +5,7 @@
   >
     <div
       v-if="store.detailLoading"
-      class="modal-content bg-surface border border-surface-border rounded-2xl shadow-modal w-[90vw] max-w-[900px] max-h-[85vh] p-16 flex items-center justify-center bg-text-primary/[0.02]"
+      class="modal-content bg-surface border border-surface-border rounded-2xl shadow-modal w-[90vw] max-w-[900px] max-h-[85vh] p-16 flex items-center justify-center bg-text-text-primary/[0.02]"
     >
       <svg class="w-8 h-8 text-accent animate-spin-slow" fill="none" viewBox="0 0 24 24">
         <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4" />
@@ -37,7 +37,7 @@
             </div>
           </div>
         <div class="flex-1 min-w-0 flex flex-col gap-3 pt-0.5">
-          <h2 class="text-xl font-semibold text-white leading-tight break-words pr-6">
+          <h2 class="text-xl font-semibold text-text-primary leading-tight break-words pr-6">
             {{ store.currentComic.title }}
           </h2>
           <div v-if="store.currentComic.tags && store.currentComic.tags.length" class="flex flex-wrap gap-1.5">
